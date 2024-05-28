@@ -1,0 +1,24 @@
+ignores:
+ - "@babel/core"
+ - "@babel/preset-typescript"
+ - "@mongodb-js/prettier-config-devtools"
+ - "@types/jest"
+ - "buffer"
+ - "eslint-config-mongodb-js"
+ - "mocha-junit-reporter"
+ - "mocha-multi"
+ - "mongodb-client-encryption"
+ - "pre-commit"
+ - "process"
+ - "vscode-languageserver-textdocument"
+ - "vscode"
+ - "webpack-cli"
+ - "@mongodb-js/oidc-plugin"
+ - css-loader
+ - less
+ - less-loader
+ - node-loader
+ - postcss-loader
+ - style-loader
+ - ts-loader
+ - mongodb-runner

@@ -1,0 +1,82 @@
+name: Rebuild changelog
+
+on:
+  # manually
+  workflow_dispatch:
+
+  # on release published
+  release:
+    types: [published]
+
+  # nightly
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  rebuild-changelog:
+    name: Rebuild changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # don't checkout a detached HEAD, is important to have a real base
+          # branch when creating a PR
+          ref: ${{ github.head_ref }}
+
+          # this is important so git log can pick up on
+          # the whole history to generate the CHANGELOG
+          fetch-depth: '0'
+
+      - name: Set up Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Update CHANGELOG.md
+        # List all the releases and rebuild
+        # the changelog with the last 30
+        # releases
+        # Use the `--limit` parameter in `gh release list`
+        # to tweak this number
+        run: |
+          echo "# Change Log" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          tags=$(gh api repos/mongodb-js/vscode/releases | jq -r .[].tag_name | grep -v internal | grep -v pre | grep -v beta)
+
+          # NOTE: here the quotes around $tags are necessary
+          echo "$tags" | while read tagName; do
+
+            json=$(gh release view $tagName --json=name,publishedAt,url,body)
+            url=$(echo $json | jq -r .url)
+            name=$(echo $json | jq -r .name)
+            date=$(echo $json | jq -r .publishedAt | cut -f1 -dT)
+            body=$(echo $json | jq -r .body)
+            echo "## [$name]($url) - $date" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "$body" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Update changelog
+          base: main
+          branch: ci/update-changelog
+          title: 'chore: update CHANGELOG.md'
+          add-paths: |
+            CHANGELOG.md
+          body: |
+            - Update `CHANGELOG.md`
+
+      - name: Merge PR
+        env:
+          PULL_REQUEST_NUMBER: ${{steps.cpr.outputs.pull-request-number}}
+          # NOTE: we don't use a PAT so to not trigger further automation
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge $PULL_REQUEST_NUMBER --squash --delete-branch

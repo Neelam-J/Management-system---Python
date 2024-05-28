@@ -1,0 +1,200 @@
+{
+	"name": "autopep8",
+	"displayName": "autopep8",
+	"description": "%extension.description%",
+	"version": "2023.8.0",
+	"preview": true,
+	"serverInfo": {
+		"name": "autopep8",
+		"module": "autopep8"
+	},
+	"publisher": "ms-python",
+	"license": "MIT",
+	"homepage": "https://github.com/Microsoft/vscode-autopep8",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/microsoft/vscode-autopep8.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Microsoft/vscode-autopep8/issues"
+	},
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#1e415e",
+		"theme": "dark"
+	},
+	"keywords": [
+		"python",
+		"formatting",
+		"autopep8"
+	],
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Formatters"
+	],
+	"extensionDependencies": [
+		"ms-python.python"
+	],
+	"capabilities": {
+		"virtualWorkspaces": {
+			"supported": false,
+			"description": "Virtual Workspaces are not supported with Autopep8 formatter."
+		}
+	},
+	"activationEvents": [
+		"onLanguage:python",
+		"workspaceContains:pyproject.toml",
+		"workspaceContains:setup.cfg",
+		"workspaceContains:tox.ini",
+		"workspaceContains:.pep8",
+		"workspaceContains:.flake8"
+	],
+	"main": "./dist/extension.js",
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"format-check": "prettier --check 'src/**/*.ts' 'build/**/*.yml' '.github/**/*.yml'",
+		"test": "node ./out/test/runTest.js",
+		"vsce-package": "vsce package -o autopep8.vsix"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"filenames": [
+					"pyproject.toml"
+				],
+				"id": "toml"
+			},
+			{
+				"filenames": [
+					"setup.cfg",
+					"tox.ini",
+					".pep8",
+					".flake8"
+				],
+				"id": "ini"
+			}
+		],
+		"configuration": {
+			"properties": {
+				"autopep8.args": {
+					"default": [],
+					"markdownDescription": "%settings.args.description%",
+					"items": {
+						"type": "string"
+					},
+					"scope": "resource",
+					"type": "array"
+				},
+				"autopep8.path": {
+					"default": [],
+					"markdownDescription": "%settings.path.description%",
+					"scope": "resource",
+					"items": {
+						"type": "string"
+					},
+					"type": "array",
+					"examples": [
+						[
+							"~/global_env/autopep8"
+						],
+						[
+							"~/.env/python",
+							"-m",
+							"autopep8"
+						]
+					]
+				},
+				"autopep8.importStrategy": {
+					"default": "useBundled",
+					"markdownDescription": "%settings.importStrategy.description%",
+					"enum": [
+						"useBundled",
+						"fromEnvironment"
+					],
+					"markdownEnumDescriptions": [
+						"%settings.importStrategy.useBundled.description%",
+						"%settings.importStrategy.fromEnvironment.description%"
+					],
+					"scope": "resource",
+					"type": "string"
+				},
+				"autopep8.interpreter": {
+					"default": [],
+					"markdownDescription": "%settings.interpreter.description%",
+					"scope": "resource",
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				},
+				"autopep8.showNotifications": {
+					"default": "off",
+					"markdownDescription": "%settings.showNotifications.description%",
+					"enum": [
+						"off",
+						"onError",
+						"onWarning",
+						"always"
+					],
+					"markdownEnumDescriptions": [
+						"%settings.showNotifications.off.description%",
+						"%settings.showNotifications.onError.description%",
+						"%settings.showNotifications.onWarning.description%",
+						"%settings.showNotifications.always.description%"
+					],
+					"scope": "machine",
+					"type": "string"
+				}
+			}
+		},
+		"commands": [
+			{
+				"title": "%command.restartServer%",
+				"category": "autopep8",
+				"command": "autopep8.restart"
+			}
+		]
+	},
+	"dependencies": {
+		"fs-extra": "^11.1.1",
+		"vscode-languageclient": "^8.1.0"
+	},
+	"devDependencies": {
+		"@types/fs-extra": "^11.0.3",
+		"@types/glob": "^8.1.0",
+		"@types/node": "16.x",
+		"@types/vscode": "^1.74.0",
+		"@typescript-eslint/eslint-plugin": "^6.9.1",
+		"@typescript-eslint/parser": "^6.9.1",
+		"@vscode/test-electron": "^2.3.6",
+		"@vscode/vsce": "^2.22.0",
+		"eslint": "^8.52.0",
+		"glob": "^10.3.10",
+		"prettier": "^3.0.3",
+		"ts-loader": "^9.5.0",
+		"typescript": "^5.2.2",
+		"webpack": "^5.89.0",
+		"webpack-cli": "^5.1.4"
+	},
+	"__metadata": {
+		"id": "5a21b0c3-89ca-46dd-8ada-658518fb94a5",
+		"publisherId": "998b010b-e2af-44a5-a6cd-0b5fd3b9b6f8",
+		"publisherDisplayName": "Microsoft",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"updated": true,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1701845829406,
+		"preRelease": false
+	}
+}

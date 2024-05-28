@@ -1,0 +1,45 @@
+name: Test and Build
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  test-and-build:
+    name: Test and Build
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2019, macos-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Run tests and build
+        uses: ./.github/workflows/actions/test-and-build
+        with:
+          SEGMENT_KEY: ${{ secrets.SEGMENT_KEY_PROD }}
+          ARTIFACTORY_HOST: ${{ secrets.ARTIFACTORY_HOST }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          GARASIGN_PASSWORD: ${{ secrets.GARASIGN_PASSWORD }}
+          GARASIGN_USERNAME: ${{ secrets.GARASIGN_USERNAME }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
